@@ -19,24 +19,24 @@ import java.util.Map;
 public class JoinController {
     private final JoinService joinService;
 
+    // 회원 정보 저장
     @PostMapping("/join/create")
     public Map<String, Object> create(@RequestBody JoinDTO formDTO ){
         String result = joinService.processJoin(formDTO);
 
-       Map<String, Object> response =  new HashMap<>();
-       response.put("message", result);
+        Map<String, Object> response =  new HashMap<>();
+        response.put("message", result);
         return response;
     }
 
 
-
+    //회원 정보 출력 (+ 인증유무에 따른 접근 권한 설정)
     @GetMapping("/admin")
     public Object showAdminPage(@RequestParam(defaultValue="0") int page, HttpSession session){
-        //세션에 유저 정보가 없을 시 에러 객체 반환
-//        if(session.getAttribute("loginUer") == null){
-//            // Map.of(key, value); 간단한 구조의 객체 생성 (수정 불가)
-//            return Map.of("error", "로그인이 필요합니다.");
-//        }
+
+        if(session.getAttribute("loginUser") == null){
+            return Map.of("error", "로그인이 필요합니다.");
+        }
 
         int pageSize = 3;
         Page<JoinEntity> userPage = joinService.getUsersByPage(page, pageSize);
@@ -48,6 +48,7 @@ public class JoinController {
         return result;
     }
 
+    // 회원 정보 삭제
     @DeleteMapping("/admin/del/{id}")
     public Map<String, String> delUser(@PathVariable Long id){
         joinService.delete(id);
@@ -55,14 +56,15 @@ public class JoinController {
         result.put("message", "삭제 성공");
         return result;
     }
-    
 
+
+    //특정 회원 정보만 가져옴
     @GetMapping("/admin/edit/{id}")
     public JoinEntity editUser(@PathVariable Long id){
-       return joinService.getUserById(id);
+        return joinService.getUserById(id);
     }
 
-
+    //가져온 회원 정보 수정
     @PutMapping("/admin/update")
     public Map<String, String> updateUser(@RequestBody JoinEntity formUser){
         joinService.updateUser(formUser);
@@ -72,4 +74,3 @@ public class JoinController {
         return result;
     }
 }
-

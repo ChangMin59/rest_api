@@ -11,6 +11,7 @@ public class LoginService {
 
     private final JoinRepo joinRepo;
 
+    // 이름과 이메일을 전달 받아 2개의 정보가 모두 매칭되는 사용자 정보를 DB에서 찾아 반환
     public JoinEntity checkUser(String uname, String email) {
         return joinRepo.findByUnameAndEmail(uname, email);
     }
